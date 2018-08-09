@@ -1,0 +1,7 @@
+[package]
+name = "initals"
+version = "0.1.0"
+authors = ["sonmezonur <onursonmez6116@gmail.com>"]
+
+[dependencies]
+image = "*"
