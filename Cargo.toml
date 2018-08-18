@@ -1,7 +1,28 @@
 [package]
 name = "initals"
 version = "0.1.0"
-authors = ["sonmezonur <onursonmez6116@gmail.com>"]
+description = """
+initials avatar for rust
+"""
+authors = ["sonmezonur"]
+documentation = "https://github.com/sonmezonur/initals.rs"
+homepage = "https://github.com/sonmezonur/initals.rs"
+repository = "https://github.com/sonmezonur/initals.rs"
+readme = "README.md"
+keywords = ["image", "avatar", "processing", "initial"]
+categories = ["image", "image-processing"]
+license = "MIT"
+include = ["src/*", "Cargo.toml"]
+
+[lib]
+name = "initials"
+path = "src/lib.rs"
+
+[[bin]]
+name = "bin"
+path = "bin/main.rs"
 
 [dependencies]
-image = "*"
+failure = "0.1.2"
+image = "0.19.0"
+rusttype = "0.6.4"
