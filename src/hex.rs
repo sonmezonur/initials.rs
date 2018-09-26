@@ -1,7 +1,5 @@
 //! Hex module helps to convert Color Hex Code to RGB.
 use std::i64;
-use std::error;
-use std::fmt;
 use std::num::ParseIntError;
 use std::iter::FromIterator;
 
