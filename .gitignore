@@ -3,3 +3,5 @@ target
 bin
 *.jpg
 *.png
+frontend
+backend

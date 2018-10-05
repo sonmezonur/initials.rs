@@ -22,7 +22,7 @@ impl From<ParseIntError> for HexError {
     }
 }
 
-
+/// Parse hex code and generate RGB vector accordingly.
 pub fn parse_hex(hex_str: &str) -> Result<Vec<i64>, HexError> {
     if !hex_str.starts_with("#") {
         return Err(HexError::InvalidHexFormat {
