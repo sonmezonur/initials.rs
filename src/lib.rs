@@ -31,8 +31,22 @@
 //! Or, you may manipulate `DynamicImage` according to your needs after building.([Docs](https://docs.rs/image))
 //!
 //! # Customization
+//!
+//! `initials` allows to fully customize the attributes of the image.
 //! 
-//! |  function | description |
+//! ##### Default Attributes
+//!   -  **font:** Hirgino Sans
+//!   -  **font_scale:** 150.0
+//!   -  **length:** 2
+//!   -  **width:** 300
+//!   -  **height:** 300
+//!   -  **contrast_ratio:** 4.5
+//!   -  **font_color:** randomly generated
+//!   -  **background_color:** randomly generated
+//!
+//! ##### Manipulation
+//!
+//! |  method | description |
 //! |-----------|-------------|
 //! |  with_font(str) | Font file path(.ttf)  |
 //! |  with_font_color(str)   | Font hex color code  |
@@ -43,7 +57,7 @@
 //! |  with_width(u32)  | Image width  |
 //! |  with_contrast_ratio(u32)  | Contrast ratio for the randomly generated colors  |
 //! 
-//! ### Example
+//! ##### Example
 //! 
 //! ```
 //!   use initials::AvatarBuilder;
@@ -76,7 +90,9 @@
 //!     .with_background_color("#FAFAFA")
 //!     .draw();
 //! ```
-
+//! 
+//! - Means that you may fully customize the colors or unsetted colors will be automatically generated
+//! by providing clear and readable avatars according to the contrast ratio.
 
 #[macro_use]
 extern crate failure;
