@@ -3,6 +3,7 @@ use rusttype::{point, Font, Scale};
 use image::{DynamicImage, Rgba, ImageBuffer};
 use std::io::prelude::*;
 use std::fs::File;
+use std::cmp;
 use hex;
 use contrast;
 
@@ -28,10 +29,11 @@ pub struct AvatarBuilder {
     pub height: u32,
     /// Contrast ratio for the colors
     pub contrast_ratio: f32,
-
+    /// Private property to hold if colors should be randomly generated
     randomized_colors: (bool, bool)
 }
 
+/// Generate vectorized RGB color with range 0 to 255
 fn generate_random_rgb() -> Vec<i64> {
     use rand::prelude::*;
         
@@ -100,10 +102,10 @@ impl AvatarBuilder {
 
     /// Change the background color of the avatar. You need to specify hex color code.
     pub fn with_background_color(mut self, color: &str) -> Self {
-        let font_color = hex::parse_hex(color).unwrap_or_else(|e| {
+        let background_color = hex::parse_hex(color).unwrap_or_else(|e| {
             panic!("failed to parse: {}", e);
         });
-        self.background_color = font_color;
+        self.background_color = background_color;
         self.randomized_colors.1 = false;
         self
     }
@@ -130,7 +132,7 @@ impl AvatarBuilder {
     }
 
     /// Change the contrast ratio for the randomly generated avatar.
-    /// Default to `4.5`. If you want more clear, then increase the ratio
+    /// Default to `4.5`. Increase the ratio for more clear avatar.
     pub fn with_contrast_ratio(mut self, ratio: f32) -> Self {
         self.contrast_ratio = ratio;
         self
@@ -148,7 +150,7 @@ impl AvatarBuilder {
         // get the number of characters from the given name
         let text: String = self.name
             .chars()
-            .take(self.length)
+            .take(cmp::min(self.length, self.name.len()))
             .collect();
 
         // layout the glyphs
@@ -173,7 +175,7 @@ impl AvatarBuilder {
         // create dynamic RGBA image
         let mut image = DynamicImage::new_rgba8(self.width, self.height).to_rgba();
 
-        // randomize colors if not setted
+        // randomize colors if not being settled
         let mut colors = self.randomized_colors.clone();
         let mut background_color = self.background_color.clone();
         let mut font_color = self.font_color.clone();
@@ -190,7 +192,8 @@ impl AvatarBuilder {
                     }
 
                     colors = match contrast::find_ratio(&font_color, &background_color) {
-                        r if r > self.contrast_ratio  => (false, false),
+                        // match if contrast ratio between colors is as expected
+                        r if r > self.contrast_ratio || r < 1. / self.contrast_ratio => (false, false),
                         _ => {
                             if colors.0 | colors.1 {
                                 colors
