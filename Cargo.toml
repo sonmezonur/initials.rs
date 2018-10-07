@@ -1,5 +1,5 @@
 [package]
-name = "initals"
+name = "initials"
 version = "0.1.0"
 description = """
 initials avatar for rust
@@ -27,5 +27,3 @@ failure = "0.1.2"
 image = "0.19.0"
 rusttype = "0.6.4"
 rand = "0.5.5"
-
-
