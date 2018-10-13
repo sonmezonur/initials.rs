@@ -59,7 +59,7 @@ mod tests {
         let hex_value = "#0qfd00";
         let res = parse_hex(hex_value);
         assert!(res.is_err());
-        assert_eq!(format!("{}", res.unwrap_err()), "couldn't parse hex value");
+        assert_eq!(format!("{}", res.unwrap_err()), "couldn't parse hex value: invalid digit found in string");
     }
 
     #[test]
