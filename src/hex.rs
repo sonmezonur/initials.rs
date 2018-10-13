@@ -1,37 +1,18 @@
 //! Hex module helps to convert Color Hex Code to RGB.
 use std::i64;
-use std::num::ParseIntError;
 use std::iter::FromIterator;
-
-
-#[derive(Debug, Fail)]
-pub enum HexError {
-    #[fail(display = "unexpected hex color format: expected({}), got({})", expected, actual)]
-    InvalidHexFormat {
-        actual: String,
-        expected: String,
-    },
-
-    #[fail(display = "couldn't parse hex value")]
-    Parse(ParseIntError),
-}
-
-impl From<ParseIntError> for HexError {
-    fn from(error: ParseIntError) -> Self {
-        HexError::Parse(error)
-    }
-}
+use error::Error;
 
 /// Parse hex code and generate RGB vector accordingly.
-pub fn parse_hex(hex_str: &str) -> Result<Vec<i64>, HexError> {
+pub fn parse_hex(hex_str: &str) -> Result<Vec<i64>, Error> {
     if !hex_str.starts_with("#") {
-        return Err(HexError::InvalidHexFormat {
+        return Err(Error::InvalidHexFormat {
             expected: String::from("Color hex code must start with `#`"),
             actual: String::from(format!("Color hex starts with `{}`", hex_str.chars().next().unwrap()))
         });
     }
     if hex_str.len() != 7 {
-        return Err(HexError::InvalidHexFormat {
+        return Err(Error::InvalidHexFormat {
             expected: String::from("Hex code must be `7` characters long. Example: `#00FF00`"),
             actual: String::from(format!("Hex code is `{}` characters long!", hex_str.len()))
         });
@@ -46,7 +27,6 @@ pub fn parse_hex(hex_str: &str) -> Result<Vec<i64>, HexError> {
         ]
     )
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -6,7 +6,7 @@ use std::fs::File;
 use std::cmp;
 use hex;
 use contrast;
-
+use error::Error;
 
 /// Avatar builder that stores the metrics of the image.
 #[derive(Debug)]
@@ -32,6 +32,9 @@ pub struct AvatarBuilder {
     /// Private property to hold if colors should be randomly generated
     randomized_colors: (bool, bool)
 }
+
+/// Result type for the avatar generator
+pub type AvatarResult = Result<AvatarBuilder, Error>;
 
 /// Generate vectorized RGB color with range 0 to 255
 fn generate_random_rgb() -> Vec<i64> {
@@ -73,71 +76,64 @@ impl AvatarBuilder {
 
     /// Change the font of the avatar text. You need to include `.ttf` file.
     /// Default style is `Hiragino_Sans`.
-    pub fn with_font(mut self, font: &str) -> Self {
-        let mut f = File::open(font).unwrap_or_else(|e| {
-            panic!("failed to open file: {}", e);
-        });
+    pub fn with_font(mut self, font: &str) -> AvatarResult {
+        let mut f = File::open(font)?;
         let mut font_data = Vec::new();
         f.read_to_end(&mut font_data).expect("unable to read data");
         self.font_data = font_data;
-        self
+        Ok(self)
     }
 
     /// Change the font color. You need to specify hex color code.
-    pub fn with_font_color(mut self, color: &str) -> Self {
-        let font_color = hex::parse_hex(color).unwrap_or_else(|e| {
-            panic!("failed to parse: {}", e);
-        });
+    pub fn with_font_color(mut self, color: &str) -> AvatarResult {
+        let font_color = hex::parse_hex(color)?;
         self.font_color = font_color;
         self.randomized_colors.0 = false;
-        self
+        Ok(self)
     }
 
     /// Change the uniform scale of font.
     /// Default to `150.0`.
-    pub fn with_font_scale(mut self, scale: f32) -> Self {
+    pub fn with_font_scale(mut self, scale: f32) -> AvatarResult {
         self.font_scale = Scale::uniform(scale);
-        self
+        Ok(self)
     }
 
     /// Change the background color of the avatar. You need to specify hex color code.
-    pub fn with_background_color(mut self, color: &str) -> Self {
-        let background_color = hex::parse_hex(color).unwrap_or_else(|e| {
-            panic!("failed to parse: {}", e);
-        });
+    pub fn with_background_color(mut self, color: &str) -> AvatarResult {
+        let background_color = hex::parse_hex(color)?;
         self.background_color = background_color;
         self.randomized_colors.1 = false;
-        self
+        Ok(self)
     }
 
     /// Change the length of initials characters taken from the name.
     /// Default to `2`. 
-    pub fn with_length(mut self, length: usize) -> Self {
+    pub fn with_length(mut self, length: usize) -> AvatarResult {
         self.length = length;
-        self
+        Ok(self)
     }
 
     /// Change the width of the avatar.
     /// Default to `300`. 
-    pub fn with_width(mut self, width: u32) -> Self {
+    pub fn with_width(mut self, width: u32) -> AvatarResult {
         self.width = width;
-        self
+        Ok(self)
     }
 
     /// Change the height of the avatar.
     /// Default to `300`. 
-    pub fn with_height(mut self, height: u32) -> Self {
+    pub fn with_height(mut self, height: u32) -> AvatarResult {
         self.height = height;
-        self
+        Ok(self)
     }
 
     /// Change the contrast ratio for the randomly generated avatar.
     /// Default to `4.5`. Increase the ratio for more clear avatar.
-    pub fn with_contrast_ratio(mut self, ratio: f32) -> Self {
+    pub fn with_contrast_ratio(mut self, ratio: f32) -> AvatarResult {
         self.contrast_ratio = ratio;
-        self
+        Ok(self)
     }
-
 
     /// Draw the image according to the metrics given.
     pub fn draw(self) -> ImageBuffer<Rgba<u8>, Vec<u8>> {

@@ -104,5 +104,8 @@ extern crate rusttype;
 pub mod hex;
 pub mod contrast;
 pub mod avatar;
+pub mod error;
 
 pub use avatar::AvatarBuilder;
+pub use avatar::AvatarResult;
+pub use error::Error;
