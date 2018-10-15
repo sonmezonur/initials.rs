@@ -61,7 +61,7 @@ impl AvatarBuilder {
 
         // default Avatar settings
         AvatarBuilder {
-            name: text,
+            name: text.to_uppercase(),
             font_data: include_bytes!("fonts/Hiragino_Sans_GB_W3.ttf").to_vec(),
             font_scale: Scale::uniform(150.0),
             length: 2,
