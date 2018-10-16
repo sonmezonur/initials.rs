@@ -1,0 +1,9 @@
+[package]
+name = "api"
+version = "0.1.0"
+authors = ["sonmezonur"]
+
+[dependencies]
+initials = { git = "https://github.com/sonmezonur/initials.rs" }
+actix = "0.7.4"
+actix-web = "0.7.8"

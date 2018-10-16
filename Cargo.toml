@@ -12,7 +12,6 @@ readme = "README.md"
 keywords = ["image", "avatar", "processing", "initial"]
 categories = ["image", "image-processing"]
 license = "MIT"
-include = ["src/*", "Cargo.toml"]
 
 [lib]
 name = "initials"
