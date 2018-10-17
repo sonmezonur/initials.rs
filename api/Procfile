@@ -1,1 +1,1 @@
-web: target/release/api
+web: APP_PORT=$PORT target/release/api

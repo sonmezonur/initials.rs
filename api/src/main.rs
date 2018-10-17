@@ -12,6 +12,7 @@ use std::collections::HashMap;
 use std::str;
 use std::str::FromStr;
 use std::cmp;
+use std::env;
 
 // store closure inside App state
 struct AppState {
@@ -41,6 +42,11 @@ fn handle_index(_: State<AppState>) -> Result<HttpResponse> {
         .header(header::LOCATION, "/img/a")
         .finish()
     )
+}
+
+// server port
+fn server_port() -> u16 {
+    env::var("APP_PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(8000)
 }
 
 // serve the avatars using initials crate
@@ -96,7 +102,7 @@ fn main() {
                     |_| HttpResponse::MethodNotAllowed());
             })
     })
-    .bind("127.0.0.1:8000")
+    .bind(format!("0.0.0.0:{}", server_port()))
     .unwrap()
     .shutdown_timeout(0)
     .start();
