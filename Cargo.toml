@@ -1,6 +1,6 @@
 [package]
 name = "initials"
-version = "0.1.0"
+version = "0.1.1"
 description = """
 initials avatar for rust
 """
@@ -10,7 +10,7 @@ homepage = "https://github.com/sonmezonur/initals.rs"
 repository = "https://github.com/sonmezonur/initals.rs"
 readme = "README.md"
 keywords = ["image", "avatar", "processing", "initial"]
-categories = ["image", "image-processing"]
+categories = ["multimedia", "multimedia::images", "rendering"]
 license = "MIT"
 
 [lib]
