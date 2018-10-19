@@ -86,12 +86,12 @@
 //! ```
 //! use initials::{AvatarBuilder, AvatarResult};
 //!	
-//! fn avatar_with_random_background() -> AvatarResult {
+//! fn avatar_with_random_font() -> AvatarResult {
 //!	    AvatarBuilder::new("Lucky Seven")
 //!         .with_background_color("#FAFAFA")
 //! }
 //!
-//! fn avatar_with_random_font() -> AvatarResult {
+//! fn avatar_with_random_background() -> AvatarResult {
 //!	    AvatarBuilder::new("Lucky Seven")
 //!         .with_font_color("#000000")
 //! }
