@@ -7,3 +7,10 @@ matrix:
   allow_failures:
     - rust: nightly
   fast_finish: true
+after_success: |
+    cargo doc \
+    && echo '<meta http-equiv=refresh content=0;url=initials/index.html>' > target/doc/index.html && \
+    sudo pip install ghp-import && \
+    ghp-import -n target/doc && \
+    git push -qf https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+    echo "Uploaded documentation"
