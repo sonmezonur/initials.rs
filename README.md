@@ -46,6 +46,10 @@ fn main() {
 
 See [Documentation](https://sonmezonur.github.io/initials.rs)
 
+Example
+--------
+[App](https://iavatar.herokuapp.com) |
+[Doc](https://github.com/sonmezonur/initials.rs/blob/master/api)
 
 License
 --------

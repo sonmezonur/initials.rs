@@ -57,9 +57,9 @@ fn handle_avatar(
     let mut builder = (state.builder)(&name);
     for (key, value) in query.iter() {
         let res: AvatarResult = match key.as_ref() {
-            "f" => builder.with_font(value),
             "bc" => builder.with_background_color(&format!("#{}", value)),
             "fc" => builder.with_font_color(&format!("#{}", value)),
+            "fs" => builder.with_font_scale(f32::from_str(value).unwrap_or(150.)),
             "l" => builder.with_length(usize::from_str(value).unwrap_or(2)),
             "w" =>  builder.with_width(u32::from_str(value).unwrap_or(300)),
             "h" => builder.with_height(u32::from_str(value).unwrap_or(300)),
