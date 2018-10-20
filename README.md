@@ -3,6 +3,14 @@ initials [![Build Status](https://travis-ci.org/sonmezonur/initials.rs.svg?branc
 
 `initials` crate helps to generate customizable avatars with the initial characters from the names.
 
+<p float="center">
+  <img src="gen/a.jpg" width="100" height="100"/> 
+  <img src="gen/铁.jpg" width="100" height="100" />
+  <img src="gen/fm.jpg" width="100" height="100"/>
+  <img src="gen/i.jpg" width="100" height="100"/>
+</p>
+
+
 Setup and Usage
 --------
 
@@ -36,7 +44,7 @@ fn main() {
 
 ```
 
-See [Documentation](https://docs.rs/initials)
+See [Documentation](https://sonmezonur.github.io/initials.rs)
 
 
 License
