@@ -5,9 +5,9 @@ description = """
 initials avatar for rust
 """
 authors = ["sonmezonur"]
-documentation = "https://github.com/sonmezonur/initals.rs"
-homepage = "https://github.com/sonmezonur/initals.rs"
-repository = "https://github.com/sonmezonur/initals.rs"
+documentation = "https://docs.rs/initials"
+homepage = "https://github.com/sonmezonur/initials.rs"
+repository = "https://github.com/sonmezonur/initials.rs.git"
 readme = "README.md"
 keywords = ["image", "avatar", "processing", "initial"]
 categories = ["multimedia", "multimedia::images", "rendering"]
