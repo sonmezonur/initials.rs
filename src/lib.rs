@@ -56,6 +56,7 @@
 //! |  with_height(u32)  | Image height  |
 //! |  with_width(u32)  | Image width  |
 //! |  with_contrast_ratio(u32)  | Contrast ratio for the randomly generated colors  |
+//! |  with_blur(f32)  | Applied Gaussian Filter  |
 //! 
 //! ##### Example
 //! 

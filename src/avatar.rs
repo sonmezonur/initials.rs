@@ -1,6 +1,6 @@
 //! Avatar module helps to generate avatars according to the initial names.
 use rusttype::{point, Font, Scale};
-use image::{DynamicImage, Rgba, ImageBuffer};
+use image::{DynamicImage, Rgba, ImageBuffer, imageops};
 use std::io::prelude::*;
 use std::fs::File;
 use std::cmp;
@@ -14,23 +14,25 @@ pub struct AvatarBuilder {
     /// Initials name string
     pub name: String,
     /// Vectorized font data
-    pub font_data: Vec<u8>,
+    font_data: Vec<u8>,
     /// Scale of the font
-    pub font_scale: Scale,
+    font_scale: Scale,
     /// RGB color of the font
-    pub font_color: Vec<i64>,
+    font_color: Vec<i64>,
     /// RGB color of the background
-    pub background_color: Vec<i64>,
+    background_color: Vec<i64>,
     /// Size of the inner-text
     pub length: usize,
     /// Width of the avatar
-    pub width: u32,
+    width: u32,
     /// Height of the avatar
-    pub height: u32,
+    height: u32,
     /// Contrast ratio for the colors
-    pub contrast_ratio: f32,
+    contrast_ratio: f32,
     /// Private property to hold if colors should be randomly generated
-    randomized_colors: (bool, bool)
+    randomized_colors: (bool, bool),
+    /// Gaussian blur of the image
+    blur: Option<f32>,
 }
 
 /// Result type for the avatar generator
@@ -71,6 +73,7 @@ impl AvatarBuilder {
             contrast_ratio: 4.5,
             font_color: vec![255, 255, 255], // default white color
             background_color: vec![224, 143, 112], // default background
+            blur: None,
         }
     }
 
@@ -132,6 +135,13 @@ impl AvatarBuilder {
     /// Default to `4.5`. Increase the ratio for more clear avatar.
     pub fn with_contrast_ratio(mut self, ratio: f32) -> AvatarResult {
         self.contrast_ratio = ratio;
+        Ok(self)
+    }
+
+
+    /// Apply gaussian blur to the avatar.
+    pub fn with_blur(mut self, blur: f32) -> AvatarResult {
+        self.blur = Some(blur);
         Ok(self)
     }
 
@@ -236,6 +246,12 @@ impl AvatarBuilder {
                 }
             }
         }
-        image
+
+        // apply gaussian blur to the image if specified
+        if let Some(b) = self.blur {
+            imageops::blur(&image, b)
+        } else {
+            image
+        }
     }
 }
