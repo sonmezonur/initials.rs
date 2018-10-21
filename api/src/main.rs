@@ -1,3 +1,6 @@
+#[macro_use] extern crate serde_derive;
+
+extern crate serde;
 extern crate actix;
 extern crate actix_web;
 extern crate initials;
@@ -8,9 +11,7 @@ use actix_web::{
     HttpRequest, pred, fs::NamedFile, Result,
 };
 use initials::{AvatarBuilder, AvatarResult};
-use std::collections::HashMap;
 use std::str;
-use std::str::FromStr;
 use std::cmp;
 use std::env;
 
@@ -49,36 +50,64 @@ fn server_port() -> u16 {
     env::var("APP_PORT").ok().and_then(|p| p.parse().ok()).unwrap_or(8000)
 }
 
-// serve the avatars using initials crate
-fn handle_avatar(
-    (param, query, state): (Path<String>, Query<HashMap<String, String>>, State<AppState>),
-) -> Result<NamedFile> {
-    let name = str::replace(&param, "+", " ");
-    let mut builder = (state.builder)(&name);
-    for (key, value) in query.iter() {
-        let res: AvatarResult = match key.as_ref() {
-            "bc" => builder.with_background_color(&format!("#{}", value)),
-            "fc" => builder.with_font_color(&format!("#{}", value)),
-            "fs" => builder.with_font_scale(f32::from_str(value).unwrap_or(150.)),
-            "l" => builder.with_length(usize::from_str(value).unwrap_or(2)),
-            "w" =>  builder.with_width(u32::from_str(value).unwrap_or(300)),
-            "h" => builder.with_height(u32::from_str(value).unwrap_or(300)),
-            "cr" => builder.with_contrast_ratio(f32::from_str(value).unwrap_or(5.)),
-            _ => Ok(builder)
-        };
+// Deserialize the query for Avatar
+#[derive(Deserialize)]
+struct AvatarInfo {
+    // background color
+    bc: Option<String>,
+    // font color
+    fc: Option<String>,
+    // font scale
+    fs: Option<f32>,
+    // text length
+    l: Option<usize>,
+    // avatar width
+    w: Option<u32>,
+    // avatar height
+    h: Option<u32>,
+    // contrast ratio
+    cr: Option<f32>,
+    // gaussian blur
+    gb: Option<f32>
+}
 
-        builder = match res {
-            Ok(val) => val,
-            Err(_) => return handle_bad_request(),
-        }
+// contruct new avatar according to the queries
+fn build_avatar(mut builder: AvatarBuilder, query: Query<AvatarInfo>) -> AvatarResult {
+    if let Some(ref background_color) = query.bc {
+        builder = builder.with_background_color(&format!("#{}", background_color))?
     }
 
-    let ext: String = builder.name
+    if let Some(ref font_color) = query.fc {
+        builder = builder.with_font_color(&format!("#{}", font_color))?
+    }
+
+    builder
+        .with_font_scale(query.fs.unwrap_or(150.))?
+        .with_length(query.l.unwrap_or(2))?
+        .with_width(query.w.unwrap_or(300))?
+        .with_height(query.h.unwrap_or(300))?
+        .with_contrast_ratio(query.cr.unwrap_or(5.))?
+        .with_blur(query.gb.unwrap_or(1.3))
+}
+
+// serve the avatars using `initials` crate
+fn handle_avatar(
+    (param, query, state): (Path<String>, Query<AvatarInfo>, State<AppState>),
+) -> Result<NamedFile> {
+    let name = str::replace(&param, "+", " ");
+    let builder = (state.builder)(&name);
+    
+    let avatar = match build_avatar(builder, query) {
+        Ok(value) => value,
+        Err(_) => return handle_bad_request(),
+    };
+
+    let ext: String = avatar.name
         .to_lowercase()
         .chars()
-        .take(cmp::min(builder.length, name.len()))
+        .take(cmp::min(avatar.length, name.len()))
         .collect();
-    let image = builder.draw();
+    let image = avatar.draw();
     let img_path = format!("static/{}.jpg", ext);
 
     image.save(&img_path).unwrap();
