@@ -114,8 +114,7 @@ extern crate rand;
 extern crate image;
 extern crate rusttype;
 
-pub mod hex;
-pub mod contrast;
+pub mod color;
 pub mod avatar;
 pub mod error;
 

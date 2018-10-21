@@ -4,9 +4,8 @@ use image::{DynamicImage, Rgba, ImageBuffer, imageops};
 use std::io::prelude::*;
 use std::fs::File;
 use std::cmp;
-use hex;
-use contrast;
 use error::Error;
+use color::RgbColor;
 
 /// Avatar builder that stores the metrics of the image.
 #[derive(Debug)]
@@ -18,9 +17,9 @@ pub struct AvatarBuilder {
     /// Scale of the font
     font_scale: Scale,
     /// RGB color of the font
-    font_color: Vec<i64>,
+    font_color: RgbColor,
     /// RGB color of the background
-    background_color: Vec<i64>,
+    background_color: RgbColor,
     /// Size of the inner-text
     pub length: usize,
     /// Width of the avatar
@@ -37,19 +36,6 @@ pub struct AvatarBuilder {
 
 /// Result type for the avatar generator
 pub type AvatarResult = Result<AvatarBuilder, Error>;
-
-/// Generate vectorized RGB color with range 0 to 255
-fn generate_random_rgb() -> Vec<i64> {
-    use rand::prelude::*;
-        
-    let mut rng = thread_rng();
-    let mut vec = Vec::with_capacity(3);
-    for _ in 0..3 {
-        vec.push(rng.gen_range(0, 256));
-    }
-    vec
-}
-
 
 impl AvatarBuilder {
     /// Construct new AvatarBuilder.
@@ -71,8 +57,8 @@ impl AvatarBuilder {
             height: 300,
             randomized_colors: (true, true),
             contrast_ratio: 4.5,
-            font_color: vec![255, 255, 255], // default white color
-            background_color: vec![224, 143, 112], // default background
+            font_color: RgbColor::new(255, 255, 255), // default white color
+            background_color: RgbColor::new(224, 143, 112), // default background
             blur: None,
         }
     }
@@ -89,8 +75,7 @@ impl AvatarBuilder {
 
     /// Change the font color. You need to specify hex color code.
     pub fn with_font_color(mut self, color: &str) -> AvatarResult {
-        let font_color = hex::parse_hex(color)?;
-        self.font_color = font_color;
+        self.font_color = color.parse()?;
         self.randomized_colors.0 = false;
         Ok(self)
     }
@@ -104,8 +89,7 @@ impl AvatarBuilder {
 
     /// Change the background color of the avatar. You need to specify hex color code.
     pub fn with_background_color(mut self, color: &str) -> AvatarResult {
-        let background_color = hex::parse_hex(color)?;
-        self.background_color = background_color;
+        self.background_color = color.parse()?;
         self.randomized_colors.1 = false;
         Ok(self)
     }
@@ -182,22 +166,22 @@ impl AvatarBuilder {
         let mut image = DynamicImage::new_rgba8(self.width, self.height).to_rgba();
 
         // randomize colors if not being settled
-        let mut colors = self.randomized_colors.clone();
-        let mut background_color = self.background_color.clone();
-        let mut font_color = self.font_color.clone();
+        let mut colors = self.randomized_colors;
+        let mut background_color = self.background_color;
+        let mut font_color = self.font_color;
         loop {
             match colors {
                 (false, false) => break,
                 (_, _) => {
                     if colors.0 {
-                        font_color = generate_random_rgb();
+                        font_color = RgbColor::random();
                     }
 
                     if colors.1 {
-                        background_color = generate_random_rgb();
+                        background_color = RgbColor::random();
                     }
 
-                    colors = match contrast::find_ratio(&font_color, &background_color) {
+                    colors = match font_color.find_ratio(&background_color) {
                         // match if contrast ratio between colors is as expected
                         r if r > self.contrast_ratio || r < 1. / self.contrast_ratio => (false, false),
                         _ => {
@@ -220,14 +204,7 @@ impl AvatarBuilder {
                     image.put_pixel(
                         x + bounding_box.min.x as u32 + left_padding,
                         y + bounding_box.min.y as u32 + top_padding,
-                        Rgba {
-                            data: [
-                                font_color[0] as u8, 
-                                font_color[1] as u8, 
-                                font_color[2] as u8, 
-                                (v * 255.0) as u8
-                            ],
-                        },
+                        font_color.to_rgba((v * 255.0) as u8),
                     )
                 });
             }
@@ -236,14 +213,7 @@ impl AvatarBuilder {
         for (_, _, pixel) in image.enumerate_pixels_mut() {
             // put background pixels for the uncovered alpha channels
             if pixel.data[3] == 0 {
-                *pixel = Rgba {
-                    data: [
-                        background_color[0] as u8,
-                        background_color[1] as u8,
-                        background_color[2] as u8,
-                        255
-                    ]
-                }
+                *pixel = background_color.to_rgba(255)
             }
         }
 
