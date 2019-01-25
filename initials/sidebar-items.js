@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["avatar","Avatar module helps to generate avatars according to the initial names."],["color","Color module that helps generating and operating on rgb colors"],["error","Error module includes the custom error types."]]});

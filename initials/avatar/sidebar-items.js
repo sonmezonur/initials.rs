@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AvatarBuilder","Avatar builder that stores the metrics of the image."]],"type":[["AvatarResult","Result type for the avatar generator"]]});

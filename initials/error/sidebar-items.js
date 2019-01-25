@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Error","Custom Error type for Avatar"]]});
